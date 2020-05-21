@@ -7,9 +7,9 @@
 // and sets an exit code based on the result of the Helper. It also supports defining flags,
 // to be provided when the user defines their credential helper:
 //
-// credentials_helper "credstore" {
-//   args = ["--host=credstore.example.com"]
-// }
+//   credentials_helper "credstore" {
+//     args = ["--host=credstore.example.com"]
+//   }
 //
 // Flags are accessible in a FlagSet passed to each Helper method.
 package credentialhelper
