@@ -3,7 +3,6 @@ package credentialhelper
 import (
 	"fmt"
 	"io/ioutil"
-	"strings"
 )
 
 type storeCommand struct {
@@ -17,7 +16,7 @@ func (c *storeCommand) Run(args []string) int {
 		return 1
 	}
 
-	if err := c.Helper.Store(args[0], bytes); err != nil {
+	if err := c.Helper.Store(args[0], bytes, c.Flags); err != nil {
 		c.UI.Error(fmt.Sprintf("error storing credentials: %v", err))
 		return 1
 	}
@@ -30,11 +29,9 @@ func (c *storeCommand) Synopsis() string {
 }
 
 func (c *storeCommand) Help() string {
-	return strings.TrimSpace(storeCommandHelp)
-}
-
-const storeCommandHelp = `
+	return c.help("store", `
 To store new credentials, Terraform will run the "store" command with any configured arguments,
 plus the hostname for which credentials should be retrieved. It will write the credentials to be
 stored to stdin.
-`
+	`)
+}

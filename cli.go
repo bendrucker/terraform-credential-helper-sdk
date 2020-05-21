@@ -1,6 +1,7 @@
 package credentialhelper
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -15,9 +16,11 @@ func New(name string, version string, helper Helper, flags *flag.FlagSet) *CLI {
 	if flags == nil {
 		flags = flag.NewFlagSet(name, flag.ContinueOnError)
 	}
+	flags.Usage = func() {}
 
 	m := &meta{
-		Stdin: os.Stdin,
+		Program: name,
+		Stdin:   os.Stdin,
 		UI: &cli.BasicUi{
 			Reader:      os.Stdin,
 			Writer:      os.Stdout,
@@ -39,6 +42,16 @@ func New(name string, version string, helper Helper, flags *flag.FlagSet) *CLI {
 		},
 	}
 
+	help := c.HelpFunc
+	c.HelpFunc = func(commands map[string]cli.CommandFactory) string {
+		usage := m.options()
+		out := help(commands)
+		if usage != "" {
+			out += "\n" + usage
+		}
+		return out
+	}
+
 	return &CLI{
 		cli:  c,
 		meta: m,
@@ -54,6 +67,11 @@ type CLI struct {
 // Run runs the CLI with the provided arguments
 func (c *CLI) Run(args []string) (int, error) {
 	if err := c.Flags.Parse(args); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			c.cli.Args = c.Flags.Args()
+			return c.cli.Run()
+		}
+
 		c.UI.Error(err.Error())
 		return 1, nil
 	}

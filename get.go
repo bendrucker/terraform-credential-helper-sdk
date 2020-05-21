@@ -2,7 +2,6 @@ package credentialhelper
 
 import (
 	"fmt"
-	"strings"
 )
 
 type getCommand struct {
@@ -10,7 +9,7 @@ type getCommand struct {
 }
 
 func (c *getCommand) Run(args []string) int {
-	creds, err := c.Helper.Get(args[0])
+	creds, err := c.Helper.Get(args[0], c.Flags)
 	if err != nil {
 		c.UI.Error(fmt.Sprintf("error getting credentials: %v", err))
 	}
@@ -24,10 +23,8 @@ func (c *getCommand) Synopsis() string {
 }
 
 func (c *getCommand) Help() string {
-	return strings.TrimSpace(getCommandHelp)
-}
-
-const getCommandHelp = `
+	return c.help("get", `
 To retrieve credentials, Terraform will run the "get" command with any configured arguments,
 plus the hostname for which credentials should be retrieved.
-`
+	`)
+}

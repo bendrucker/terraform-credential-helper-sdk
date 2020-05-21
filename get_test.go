@@ -22,7 +22,7 @@ func TestGetCommand(t *testing.T) {
 	}
 
 	helper.EXPECT().
-		Get("app.terraform.io").
+		Get("app.terraform.io", gomock.Any()).
 		Return([]byte(`{"token":"foo"}`), nil)
 
 	status := cmd.Run([]string{"app.terraform.io"})

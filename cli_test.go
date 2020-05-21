@@ -1,6 +1,9 @@
 package credentialhelper
 
 import (
+	"flag"
+	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -18,7 +21,7 @@ func TestCLIRun(t *testing.T) {
 			Args: []string{"get", "app.terraform.io"},
 			Expect: func(helper *MockHelper) {
 				helper.EXPECT().
-					Get("app.terraform.io").
+					Get("app.terraform.io", gomock.Any()).
 					Return([]byte("{}"), nil)
 			},
 			Code: 0,
@@ -66,4 +69,65 @@ func TestCLIRun(t *testing.T) {
 			}
 		})
 	}
+}
+
+func ExampleCLI_Get() {
+	cli := New("example", "dev", new(ExampleHelper), nil)
+
+	_, _ = cli.Run([]string{"get", "app.terraform.io"})
+	// Output:
+	// Getting credentials for app.terraform.io
+	// {"token":"secret"}
+}
+
+func ExampleCLI_Store() {
+	cli := New("example", "dev", new(ExampleHelper), nil)
+
+	cli.Stdin = strings.NewReader(`{"token":"secret"}`)
+	_, _ = cli.Run([]string{"store", "app.terraform.io"})
+	// Output:
+	// Storing credentials for app.terraform.io: {"token":"secret"}
+}
+
+func ExampleCLI_Forget() {
+	cli := New("example", "dev", new(ExampleHelper), nil)
+
+	_, _ = cli.Run([]string{"forget", "app.terraform.io"})
+	// Output:
+	// Forgetting credentials for app.terraform.io
+}
+
+func ExampleCLI_Flags() {
+	flags := flag.NewFlagSet("example", flag.ContinueOnError)
+	flags.Bool("insecure", false, "")
+
+	cli := New("example", "dev", new(ExampleHelper), flags)
+
+	_, _ = cli.Run([]string{"--insecure", "get", "app.terraform.io"})
+	// Output:
+	// Getting credentials for app.terraform.io
+	// with insecure = true
+	// {"token":"secret"}
+}
+
+type ExampleHelper struct{}
+
+func (h *ExampleHelper) Get(hostname string, f *flag.FlagSet) ([]byte, error) {
+	fmt.Println("Getting credentials for", hostname)
+
+	if insecure := f.Lookup("insecure"); insecure != nil {
+		fmt.Println("with insecure =", insecure.Value.(flag.Getter).Get().(bool))
+	}
+
+	return []byte(`{"token":"secret"}`), nil
+}
+
+func (h *ExampleHelper) Store(hostname string, b []byte, f *flag.FlagSet) error {
+	fmt.Printf("Storing credentials for %s: %s", hostname, string(b))
+	return nil
+}
+
+func (h *ExampleHelper) Forget(hostname string, f *flag.FlagSet) error {
+	fmt.Println("Forgetting credentials for", hostname)
+	return nil
 }
