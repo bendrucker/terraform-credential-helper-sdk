@@ -1,6 +1,6 @@
 # terraform-credential-helper-sdk 
 [![tests](https://github.com/bendrucker/terraform-credential-helper-sdk/workflows/tests/badge.svg?branch=master)](https://github.com/bendrucker/terraform-credential-helper-sdk/actions?query=workflow%3Atests)
-[![GoDoc](https://godoc.org/github.com/bendrucker/terraform-credential-helper-sdk?status.svg)](https://godoc.org/bendrucker/terraform/credential-helper-sdk)
+[![GoDoc](https://godoc.org/github.com/bendrucker/terraform-credential-helper-sdk?status.svg)](https://godoc.org/github.com/bendrucker/terraform-credential-helper-sdk)
 
 > Framework for creating [Terraform credentials helpers](https://www.terraform.io/docs/commands/cli-config.html#credentials-helpers)
 
