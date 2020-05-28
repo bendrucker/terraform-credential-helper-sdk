@@ -33,45 +33,59 @@ func (m *MockHelper) EXPECT() *MockHelperMockRecorder {
 	return m.recorder
 }
 
-// Forget mocks base method
-func (m *MockHelper) Forget(arg0 string, arg1 *flag.FlagSet) error {
+// Flags mocks base method
+func (m *MockHelper) Flags() *flag.FlagSet {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Forget", arg0, arg1)
+	ret := m.ctrl.Call(m, "Flags")
+	ret0, _ := ret[0].(*flag.FlagSet)
+	return ret0
+}
+
+// Flags indicates an expected call of Flags
+func (mr *MockHelperMockRecorder) Flags() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Flags", reflect.TypeOf((*MockHelper)(nil).Flags))
+}
+
+// Forget mocks base method
+func (m *MockHelper) Forget(arg0 string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Forget", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Forget indicates an expected call of Forget
-func (mr *MockHelperMockRecorder) Forget(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockHelperMockRecorder) Forget(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Forget", reflect.TypeOf((*MockHelper)(nil).Forget), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Forget", reflect.TypeOf((*MockHelper)(nil).Forget), arg0)
 }
 
 // Get mocks base method
-func (m *MockHelper) Get(arg0 string, arg1 *flag.FlagSet) ([]byte, error) {
+func (m *MockHelper) Get(arg0 string) ([]byte, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", arg0, arg1)
+	ret := m.ctrl.Call(m, "Get", arg0)
 	ret0, _ := ret[0].([]byte)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Get indicates an expected call of Get
-func (mr *MockHelperMockRecorder) Get(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockHelperMockRecorder) Get(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockHelper)(nil).Get), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockHelper)(nil).Get), arg0)
 }
 
 // Store mocks base method
-func (m *MockHelper) Store(arg0 string, arg1 []byte, arg2 *flag.FlagSet) error {
+func (m *MockHelper) Store(arg0 string, arg1 []byte) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Store", arg0, arg1, arg2)
+	ret := m.ctrl.Call(m, "Store", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Store indicates an expected call of Store
-func (mr *MockHelperMockRecorder) Store(arg0, arg1, arg2 interface{}) *gomock.Call {
+func (mr *MockHelperMockRecorder) Store(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Store", reflect.TypeOf((*MockHelper)(nil).Store), arg0, arg1, arg2)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Store", reflect.TypeOf((*MockHelper)(nil).Store), arg0, arg1)
 }

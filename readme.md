@@ -8,7 +8,7 @@
 
 ```go
 func main () {
-  cli := New("example", "dev", new(ExampleHelper), flags)
+  cli := New("example", "dev", new(ExampleHelper))
   code, err = cli.Run(os.Args[1:])
   
   if err != nil {
@@ -19,17 +19,25 @@ func main () {
   os.Exit(code)
 }
 
-type Helper struct{}
+type Helper struct{
+  MyFlag string
+}
 
-func (h *Helper) Get(hostname string, f *flag.FlagSet) ([]byte, error) {
+func (h *Helper) Flags() *flag.FlagSet {
+  flags := flag.NewFlagSet("example", flag.ContinueOnError)
+  flags.StringVar(&h.MyFlag, "my-flag", "default", "usage")
+  return flags
+}
+
+func (h *Helper) Get(hostname string) ([]byte, error) {
 	return nil, nil
 }
 
-func (h *Helper) Store(hostname string, b []byte, f *flag.FlagSet) error {
+func (h *Helper) Store(hostname string, b []byte) error {
 	return nil
 }
 
-func (h *Helper) Forget(hostname string, f *flag.FlagSet) error {
+func (h *Helper) Forget(hostname string) error {
 	return nil
 }
 ```

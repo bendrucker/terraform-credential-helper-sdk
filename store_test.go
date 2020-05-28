@@ -24,7 +24,7 @@ func TestStoreCommand(t *testing.T) {
 	}
 
 	helper.EXPECT().
-		Store("app.terraform.io", []byte(`{"token":"foo"}`), gomock.Any()).
+		Store("app.terraform.io", []byte(`{"token":"foo"}`)).
 		Return(nil)
 
 	status := cmd.Run([]string{"app.terraform.io"})

@@ -16,7 +16,7 @@ func (c *storeCommand) Run(args []string) int {
 		return 1
 	}
 
-	if err := c.Helper.Store(args[0], bytes, c.Flags); err != nil {
+	if err := c.Helper.Store(args[0], bytes); err != nil {
 		c.UI.Error(fmt.Sprintf("error storing credentials: %v", err))
 		return 1
 	}

@@ -9,7 +9,7 @@ type forgetCommand struct {
 }
 
 func (c *forgetCommand) Run(args []string) int {
-	if err := c.Helper.Forget(args[0], c.Flags); err != nil {
+	if err := c.Helper.Forget(args[0]); err != nil {
 		c.UI.Error(fmt.Sprintf("error forgetting credentials: %v", err))
 		return 1
 	}

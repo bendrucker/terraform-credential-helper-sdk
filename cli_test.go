@@ -14,6 +14,7 @@ func TestCLIRun(t *testing.T) {
 		Name   string
 		Args   []string
 		Expect func(*MockHelper)
+		Flags  *flag.FlagSet
 		Code   int
 	}{
 		{
@@ -21,7 +22,7 @@ func TestCLIRun(t *testing.T) {
 			Args: []string{"get", "app.terraform.io"},
 			Expect: func(helper *MockHelper) {
 				helper.EXPECT().
-					Get("app.terraform.io", gomock.Any()).
+					Get("app.terraform.io").
 					Return([]byte("{}"), nil)
 			},
 			Code: 0,
@@ -54,10 +55,13 @@ func TestCLIRun(t *testing.T) {
 			defer ctrl.Finish()
 
 			helper := NewMockHelper(ctrl)
+			helper.EXPECT().Flags().AnyTimes().Return(tc.Flags)
+
 			if tc.Expect != nil {
 				tc.Expect(helper)
 			}
-			cli := New("helper", "", helper, nil)
+
+			cli := New("helper", "", helper)
 
 			code, err := cli.Run(tc.Args)
 			if err != nil {
@@ -72,7 +76,7 @@ func TestCLIRun(t *testing.T) {
 }
 
 func ExampleCLI_Get() {
-	cli := New("example", "dev", new(ExampleHelper), nil)
+	cli := New("example", "dev", new(ExampleHelper))
 
 	_, _ = cli.Run([]string{"get", "app.terraform.io"})
 	// Output:
@@ -81,7 +85,7 @@ func ExampleCLI_Get() {
 }
 
 func ExampleCLI_Store() {
-	cli := New("example", "dev", new(ExampleHelper), nil)
+	cli := New("example", "dev", new(ExampleHelper))
 
 	cli.Stdin = strings.NewReader(`{"token":"secret"}`)
 	_, _ = cli.Run([]string{"store", "app.terraform.io"})
@@ -90,7 +94,7 @@ func ExampleCLI_Store() {
 }
 
 func ExampleCLI_Forget() {
-	cli := New("example", "dev", new(ExampleHelper), nil)
+	cli := New("example", "dev", new(ExampleHelper))
 
 	_, _ = cli.Run([]string{"forget", "app.terraform.io"})
 	// Output:
@@ -101,7 +105,7 @@ func ExampleCLI_Flags() {
 	flags := flag.NewFlagSet("example", flag.ContinueOnError)
 	flags.Bool("insecure", false, "")
 
-	cli := New("example", "dev", new(ExampleHelper), flags)
+	cli := New("example", "dev", new(ExampleHelper))
 
 	_, _ = cli.Run([]string{"--insecure", "get", "app.terraform.io"})
 	// Output:
@@ -110,24 +114,31 @@ func ExampleCLI_Flags() {
 	// {"token":"secret"}
 }
 
-type ExampleHelper struct{}
+type ExampleHelper struct {
+	Insecure bool
+}
 
-func (h *ExampleHelper) Get(hostname string, f *flag.FlagSet) ([]byte, error) {
+func (h *ExampleHelper) Flags() *flag.FlagSet {
+	flags := flag.NewFlagSet("example", flag.ContinueOnError)
+	flags.BoolVar(&h.Insecure, "insecure", false, "")
+	return flags
+}
+
+func (h *ExampleHelper) Get(hostname string) ([]byte, error) {
 	fmt.Println("Getting credentials for", hostname)
-
-	if insecure := f.Lookup("insecure"); insecure != nil {
-		fmt.Println("with insecure =", insecure.Value.(flag.Getter).Get().(bool))
+	if h.Insecure {
+		fmt.Println("with insecure = true")
 	}
 
 	return []byte(`{"token":"secret"}`), nil
 }
 
-func (h *ExampleHelper) Store(hostname string, b []byte, f *flag.FlagSet) error {
+func (h *ExampleHelper) Store(hostname string, b []byte) error {
 	fmt.Printf("Storing credentials for %s: %s", hostname, string(b))
 	return nil
 }
 
-func (h *ExampleHelper) Forget(hostname string, f *flag.FlagSet) error {
+func (h *ExampleHelper) Forget(hostname string) error {
 	fmt.Println("Forgetting credentials for", hostname)
 	return nil
 }

@@ -10,6 +10,4 @@
 //   credentials_helper "credstore" {
 //     args = ["--host=credstore.example.com"]
 //   }
-//
-// Flags are accessible in a FlagSet passed to each Helper method.
 package credentialhelper

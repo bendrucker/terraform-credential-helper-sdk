@@ -22,7 +22,7 @@ func TestForgetCommand(t *testing.T) {
 	}
 
 	helper.EXPECT().
-		Forget("app.terraform.io", gomock.Any()).
+		Forget("app.terraform.io").
 		Return(nil)
 
 	status := cmd.Run([]string{"app.terraform.io"})

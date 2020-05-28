@@ -9,7 +9,7 @@ type getCommand struct {
 }
 
 func (c *getCommand) Run(args []string) int {
-	creds, err := c.Helper.Get(args[0], c.Flags)
+	creds, err := c.Helper.Get(args[0])
 	if err != nil {
 		c.UI.Error(fmt.Sprintf("error getting credentials: %v", err))
 	}

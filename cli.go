@@ -10,13 +10,13 @@ import (
 )
 
 // New creates a new credential helper CLI
-func New(name string, version string, helper Helper, flags *flag.FlagSet) *CLI {
+func New(name string, version string, helper Helper) *CLI {
 	c := cli.NewCLI(name, version)
 
+	flags := helper.Flags()
 	if flags == nil {
 		flags = flag.NewFlagSet(name, flag.ContinueOnError)
 	}
-	flags.Usage = func() {}
 
 	m := &meta{
 		Program: name,
@@ -26,8 +26,8 @@ func New(name string, version string, helper Helper, flags *flag.FlagSet) *CLI {
 			Writer:      os.Stdout,
 			ErrorWriter: os.Stderr,
 		},
-		Flags:  flags,
 		Helper: helper,
+		Flags:  flags,
 	}
 
 	c.Commands = map[string]cli.CommandFactory{
