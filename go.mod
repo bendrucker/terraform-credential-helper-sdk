@@ -4,7 +4,7 @@ go 1.14
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/golang/mock v1.4.3
+	github.com/golang/mock v1.4.4
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/mattn/go-isatty v0.0.4 // indirect
 	github.com/mitchellh/cli v1.1.1
