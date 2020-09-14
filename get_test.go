@@ -1,6 +1,7 @@
 package credentialhelper
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -9,27 +10,56 @@ import (
 )
 
 func TestGetCommand(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
+	cases := []struct {
+		Hostname string
+		Result   []byte
+		Error    error
 
-	ui := cli.NewMockUi()
-	helper := NewMockHelper(ctrl)
-	cmd := &getCommand{
-		meta: &meta{
-			UI:     ui,
-			Helper: helper,
+		Code   int
+		Output string
+	}{
+		{
+			Hostname: "app.terraform.io",
+			Result:   []byte(`{"token":"foo"}`),
+
+			Code:   0,
+			Output: `{"token":"foo"}`,
+		},
+		{
+			Hostname: "foo.terraform.io",
+			Result:   []byte{},
+			Error:    errors.New("The specified item could not be found in the keyring"),
+
+			Code:   1,
+			Output: "error getting credentials: The specified item could not be found in the keyring\n",
 		},
 	}
 
-	helper.EXPECT().
-		Get("app.terraform.io").
-		Return([]byte(`{"token":"foo"}`), nil)
+	for _, tc := range cases {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
 
-	status := cmd.Run([]string{"app.terraform.io"})
-	if status != 0 {
-		t.Fatalf("expected command to exit with 0, got %d", status)
+		ui := cli.NewMockUi()
+		helper := NewMockHelper(ctrl)
+		cmd := &getCommand{
+			meta: &meta{
+				UI:     ui,
+				Helper: helper,
+			},
+		}
+
+		helper.EXPECT().Get(tc.Hostname).Return(tc.Result, tc.Error)
+
+		code := cmd.Run([]string{tc.Hostname})
+		if code != tc.Code {
+			t.Fatalf("expected command to exit with %d, got %d", tc.Code, code)
+		}
+
+		if code == 0 {
+			assert.JSONEq(t, tc.Output, ui.OutputWriter.String())
+			assert.Empty(t, ui.ErrorWriter.Bytes())
+		} else {
+			assert.Equal(t, tc.Output, string(ui.ErrorWriter.Bytes()))
+		}
 	}
-
-	assert.JSONEq(t, `{"token":"foo"}`, ui.OutputWriter.String())
-	assert.Empty(t, ui.ErrorWriter.Bytes())
 }
